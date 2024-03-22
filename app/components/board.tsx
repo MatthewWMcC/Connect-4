@@ -1,32 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Tile from "../components/tile";
-import { checkWinner } from "../utils/board-helpers";
-import socketClient from "../socket/socket-client";
-
-let socket;
+import Tile from "@/app/components/tile";
+import { AppContext } from "@/app/context/appContext";
+import { checkWinner } from "@/app/utils/board-helpers";
+import { initBoard } from "@/app/utils/constants";
+import { IAppContext } from "@/app/utils/types";
+import { useContext, useState } from "react";
 
 export default function Board() {
-  const row = new Array(7).fill(0);
-  const column = new Array(6).fill(0);
-  const initGameState = [...column.map((_) => [...row])];
+  const { boardState, turnState, winnerState } = useContext(
+    AppContext
+  ) as IAppContext;
 
-  const [gameState, setGameState] = useState<number[][]>(initGameState);
-  const [turn, setTurn] = useState(0);
-  const [winner, setWinner] = useState(0);
-
-  useEffect(() => {
-    socket = socketClient();
-  }, []);
+  const [board, setBoard] = boardState;
+  const [turn, setTurn] = turnState;
+  const [winner, setWinner] = winnerState;
 
   const makeMove = (j: number) => {
-    const i = gameState.findLastIndex((row) => {
+    const i = board.findLastIndex((row) => {
       return row[j] === 0;
     });
 
     if (i > -1) {
-      const newGameState = gameState.map((row, x) => {
+      const newboard = board.map((row, x) => {
         if (x === i) {
           return row.map((col, y) => {
             if (y === j) {
@@ -35,9 +31,9 @@ export default function Board() {
           });
         } else return row;
       });
-      setGameState(newGameState);
+      setBoard(newboard);
       setTurn(turn === 1 ? 2 : 1);
-      const winner = checkWinner(newGameState, i, j);
+      const winner = checkWinner(newboard, i, j);
       if (winner) {
         setWinner(winner);
         setTurn(0);
@@ -48,13 +44,13 @@ export default function Board() {
   const startGame = () => {
     setTurn(1);
     setWinner(0);
-    setGameState(initGameState);
+    setBoard(initBoard);
   };
 
   return (
     <div>
       <div className="flex max-w-3xl gap-5 flex-col p-5 bg-blue-800 rounded-xl">
-        {gameState.map((row, i) => {
+        {board.map((row, i) => {
           return (
             <div className="flex gap-5" key={i}>
               {row.map((value, j) => {

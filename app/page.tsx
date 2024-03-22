@@ -5,14 +5,8 @@ import socketClient from "./socket/socket-client";
 import { useRouter } from "next/navigation";
 import uniqid from "uniqid";
 
-let socket;
-
 export default function Home() {
   const router = useRouter();
-
-  useEffect(() => {
-    socket = socketClient();
-  }, []);
 
   const createGame = () => {
     router.push(`/board/${uniqid()}`);

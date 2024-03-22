@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from "react";
+import { Socket } from "socket.io";
 
 export interface IAppState {
   id: string;

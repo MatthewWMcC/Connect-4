@@ -3,6 +3,7 @@
 import { ReactNode, createContext, useState } from "react";
 import { initBoard, newAppState } from "../utils/constants";
 import { IAppContext, IAppState } from "../utils/types";
+import socketClient from "../socket/socket-client";
 
 export const AppContext = createContext<IAppContext | null>(null);
 

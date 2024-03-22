@@ -1,9 +1,7 @@
 "use client";
 
 import Board from "@/app/components/board";
-import socketClient from "@/app/socket/socket-client";
 import { usePathname } from "next/navigation";
-import { useEffect } from "react";
 
 let socket;
 
@@ -11,9 +9,14 @@ export default function Home() {
   const pathname = usePathname();
   const roomId = pathname?.split("/")[2];
 
-  useEffect(() => {
-    socket = socketClient();
-  }, []);
+  // useEffect(() => {
+  //   const sayHello = async () => {
+  //     console.log("saying hello");
+  //     socket = await socketClient();
+  //     socket.emit("hello");
+  //   };
+  //   sayHello();
+  // }, []);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

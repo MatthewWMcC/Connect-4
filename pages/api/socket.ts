@@ -11,7 +11,9 @@ export default function SocketHandler(req, res) {
   res.socket.server.io = io;
 
   io.on("connection", (socket) => {
-    console.log(socket.id);
+    socket.on("hello", () => {
+      console.log("recieved");
+    });
   });
 
   console.log("Setting up socket");

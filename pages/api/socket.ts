@@ -1,6 +1,6 @@
 import { Server } from "socket.io";
 import { IRoomData } from "./types";
-import { newRoomData } from "./constants";
+import { newRoomData, newGameData } from "./constants";
 import { getRoomSize } from "./helpers";
 import { checkWinner, makeMove } from "./game-helpers";
 
@@ -65,9 +65,9 @@ export default function SocketHandler(req, res) {
     socket.on("start-game", (roomId) => {
       const currentRoomData = serverState.get(roomId);
       if (currentRoomData?.players.length === 2) {
-        let roomData = { ...currentRoomData, turn: 1 };
+        let roomData = { ...currentRoomData, ...newGameData, turn: 1 };
         serverState.set(roomId, roomData);
-        io.in(roomId).emit("starting-game", roomData.turn);
+        io.in(roomId).emit("starting-game", roomData);
       }
     });
 

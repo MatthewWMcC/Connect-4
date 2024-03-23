@@ -44,8 +44,10 @@ export default function useSocket() {
       socket.on("room-full", () => {
         router.push("/");
       });
-      socket.on("starting-game", (turn) => {
-        setTurn(turn);
+      socket.on("starting-game", (roomData: IRoomData) => {
+        setBoard(roomData.board);
+        setTurn(roomData.turn);
+        setWinner(roomData.winner);
       });
       socket.on("made-move", (board, turn, winner) => {
         setBoard(board);

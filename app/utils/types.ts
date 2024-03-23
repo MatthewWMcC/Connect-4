@@ -1,3 +1,4 @@
+import { IPlayer } from "@/pages/api/types";
 import { Dispatch, SetStateAction } from "react";
 import { Socket } from "socket.io-client";
 
@@ -6,10 +7,11 @@ export interface DefaultEventsMap {
 }
 
 export interface IAppContext {
-  id: string;
+  idState: [string, Dispatch<SetStateAction<string>>];
   boardState: [number[][], Dispatch<SetStateAction<number[][]>>];
   turnState: [number, Dispatch<SetStateAction<number>>];
   winnerState: [number, Dispatch<SetStateAction<number>>];
+  playersState: [IPlayer[], Dispatch<SetStateAction<IPlayer[]>>];
 }
 
 export interface ISocketContext {

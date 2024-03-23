@@ -2,49 +2,37 @@
 
 import Tile from "@/app/components/tile";
 import { AppContext } from "@/app/context/appContext";
-import { checkWinner } from "@/app/utils/board-helpers";
 import { initBoard } from "@/app/utils/constants";
-import { IAppContext } from "@/app/utils/types";
+import { IAppContext, ISocketContext } from "@/app/utils/types";
 import { useContext, useState } from "react";
+import { SocketContext } from "../context/socketContext";
+import { useRoomId } from "../hooks/useRoomId";
 
 export default function Board() {
-  const { boardState, turnState, winnerState } = useContext(
-    AppContext
-  ) as IAppContext;
+  const { boardState, turnState, winnerState, playersState, idState } =
+    useContext(AppContext) as IAppContext;
+  const { socket } = useContext(SocketContext) as ISocketContext;
 
-  const [board, setBoard] = boardState;
-  const [turn, setTurn] = turnState;
-  const [winner, setWinner] = winnerState;
+  const [board] = boardState;
+  const [turn] = turnState;
+  const [winner] = winnerState;
+  const [players] = playersState;
+  const [id] = idState;
+  const [roomId] = useRoomId();
 
-  const makeMove = (j: number) => {
-    const i = board.findLastIndex((row) => {
-      return row[j] === 0;
-    });
+  const isYourTurn = () => {
+    const currentPlayer = players[turn - 1];
+    console.log(currentPlayer, id, players, turn);
 
-    if (i > -1) {
-      const newboard = board.map((row, x) => {
-        if (x === i) {
-          return row.map((col, y) => {
-            if (y === j) {
-              return turn;
-            } else return col;
-          });
-        } else return row;
-      });
-      setBoard(newboard);
-      setTurn(turn === 1 ? 2 : 1);
-      const winner = checkWinner(newboard, i, j);
-      if (winner) {
-        setWinner(winner);
-        setTurn(0);
-      }
-    }
+    return !!currentPlayer && currentPlayer.id === id;
+  };
+
+  const makeMove = (column: number) => {
+    socket?.emit("make-move", roomId, column);
   };
 
   const startGame = () => {
-    setTurn(1);
-    setWinner(0);
-    setBoard(initBoard);
+    socket?.emit("start-game", roomId);
   };
 
   return (
@@ -58,7 +46,7 @@ export default function Board() {
                   <Tile
                     value={value}
                     key={`${i}-${j}`}
-                    onClick={() => turn !== 0 && makeMove(j)}
+                    onClick={() => isYourTurn() && makeMove(j)}
                   />
                 );
               })}

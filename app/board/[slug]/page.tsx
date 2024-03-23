@@ -3,20 +3,21 @@
 import Board from "@/app/components/board";
 import { AppContext } from "@/app/context/appContext";
 import { SocketContext } from "@/app/context/socketContext";
+import { useRoomId } from "@/app/hooks/useRoomId";
 import { IAppContext, ISocketContext } from "@/app/utils/types";
 import { usePathname } from "next/navigation";
 import { useContext, useEffect } from "react";
 
 export default function Home() {
   const { socket } = useContext(SocketContext) as ISocketContext;
-  const { id } = useContext(AppContext) as IAppContext;
 
-  const pathname = usePathname();
-  const roomId = pathname?.split("/")[2];
+  const [roomId] = useRoomId();
 
   useEffect(() => {
-    socket?.emit("join-room", id, roomId);
-  }, [socket]);
+    if (roomId) {
+      socket?.emit("join-room", roomId);
+    }
+  }, [socket, roomId]);
 
   useEffect(() => {
     const cleanup = () => {

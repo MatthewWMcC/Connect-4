@@ -4,4 +4,4 @@ export const initBoard = [...column.map((_) => [...row])] as number[][];
 
 export const newGameData = { board: initBoard, turn: 0, winner: 0 };
 
-export const newRoomData = { playerList: [], ...newGameData };
+export const newRoomData = { players: [], ...newGameData };

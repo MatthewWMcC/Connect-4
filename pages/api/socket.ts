@@ -5,11 +5,9 @@ import { newRoomData } from "./constants";
 
 export default function SocketHandler(req, res) {
   if (res.socket.server.io) {
-    console.log("Already set up");
     res.end();
     return;
   }
-  console.log("instantiated");
   const serverState = new Map<string, IRoomData>();
 
   const io = new Server(res.socket.server);
@@ -18,6 +16,7 @@ export default function SocketHandler(req, res) {
   io.on("connection", (socket) => {
     console.log(socket.id, " connected");
     socket.on("join-room", (roomId) => {
+      console.log(socket.id, "wants to join");
       socket.join(roomId);
 
       const currentRoomData = serverState.get(roomId);

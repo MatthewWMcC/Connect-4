@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect } from "react";
-import socketClient from "./socket/socket-client";
 import { useRouter } from "next/navigation";
 import uniqid from "uniqid";
 

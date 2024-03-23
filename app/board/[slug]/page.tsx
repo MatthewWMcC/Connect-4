@@ -1,31 +1,24 @@
 "use client";
 
 import Board from "@/app/components/board";
-import { useGetSocket } from "@/app/hooks/useGetSocket";
+import { AppContext } from "@/app/context/appContext";
+import { IAppContext } from "@/app/utils/types";
 import { usePathname } from "next/navigation";
-import { useEffect, useLayoutEffect } from "react";
-
-let socket;
+import { useContext, useEffect } from "react";
 
 export default function Home() {
+  const { socket } = useContext(AppContext) as IAppContext;
+
   const pathname = usePathname();
   const roomId = pathname?.split("/")[2];
-  console.log("home");
-  const { socket } = useGetSocket();
 
-  // useEffect(() => {
-  //   if (socket) {
-  //     socket.emit("join-room", roomId);
-  //   }
-  // }, [socket]);
+  useEffect(() => {
+    socket?.emit("join-room", roomId);
 
-  // useLayoutEffect(() => {
-  //   return () => {
-  //     if (socket) {
-  //       socket.emit("leave-room", roomId);
-  //     }
-  //   };
-  // }, []);
+    return () => {
+      socket?.emit("leave-room", roomId);
+    };
+  }, [socket]);
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">

@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { AppProvider } from "./context/appContext";
 import { useEffect } from "react";
+import { SocketProvider } from "./context/socketContext";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,7 +20,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <SocketProvider>{children}</SocketProvider>
+        </AppProvider>
       </body>
     </html>
   );

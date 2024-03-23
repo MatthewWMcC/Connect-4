@@ -15,7 +15,7 @@ export default function SocketHandler(req, res) {
 
   io.on("connection", (socket) => {
     console.log(socket.id, " connected");
-    socket.on("join-room", (roomId) => {
+    socket.on("join-room", (id, roomId) => {
       console.log(socket.id, "wants to join");
       socket.join(roomId);
 
@@ -24,7 +24,7 @@ export default function SocketHandler(req, res) {
       if (currentRoomData === undefined) {
         roomData = {
           ...newRoomData,
-          playerList: [{ id: socket.id, index: 0 }],
+          playerList: [{ id: id, index: 0 }],
         };
       } else {
         roomData = {
@@ -32,27 +32,30 @@ export default function SocketHandler(req, res) {
           playerList: [
             ...currentRoomData.playerList,
             {
-              id: socket.id,
+              id: id,
               index: 1,
             },
           ],
         };
       }
       serverState.set(roomId, roomData);
-      console.log(roomData.playerList);
+      socket.emit("joined-room", roomData);
     });
-    // socket.on("leave-room", (roomId) => {
-    //   const currentRoomData = serverState.get(roomId);
-    //   if (currentRoomData) {
-    //     console.log(currentRoomData.playerList);
-    //     serverState.set(roomId, {
-    //       ...currentRoomData,
-    //       playerList: currentRoomData.playerList.filter(
-    //         ({ id }) => id !== socket.id
-    //       ),
-    //     });
-    //   }
-    // });
+    socket.on("leave-room", (roomId) => {
+      console.log(socket.id, "leaving");
+
+      socket.leave(roomId);
+      const currentRoomData = serverState.get(roomId);
+      if (currentRoomData) {
+        console.log(currentRoomData.playerList, "batman");
+        serverState.set(roomId, {
+          ...currentRoomData,
+          playerList: currentRoomData.playerList.filter(
+            ({ id }) => id !== socket.id
+          ),
+        });
+      }
+    });
   });
 
   console.log("Setting up socket");

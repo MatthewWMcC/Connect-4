@@ -3,9 +3,10 @@ import { IRoomData } from "./types";
 import { newRoomData, newGameData } from "./constants";
 import { getRoomSize } from "./helpers";
 import { checkWinner, makeMove } from "./game-helpers";
+import { NextApiRequest, NextApiResponse } from "next";
 
-export default function SocketHandler(req, res) {
-  if (res.socket.server.io) {
+export default function SocketHandler(req: NextApiRequest, res: any) {
+  if (res.socket?.server.io) {
     res.end();
     return;
   }

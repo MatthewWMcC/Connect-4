@@ -1,4 +1,7 @@
 import { Server } from "socket.io";
+import { handleGameEvents } from "../helpers/handleGameEvents";
+import { IRoomData } from "./types";
+import { newRoomData } from "./constants";
 
 export default function SocketHandler(req, res) {
   if (res.socket.server.io) {
@@ -6,14 +9,51 @@ export default function SocketHandler(req, res) {
     res.end();
     return;
   }
+  console.log("instantiated");
+  const serverState = new Map<string, IRoomData>();
 
   const io = new Server(res.socket.server);
   res.socket.server.io = io;
 
   io.on("connection", (socket) => {
-    socket.on("hello", () => {
-      console.log("recieved");
+    console.log(socket.id, " connected");
+    socket.on("join-room", (roomId) => {
+      socket.join(roomId);
+
+      const currentRoomData = serverState.get(roomId);
+      let roomData;
+      if (currentRoomData === undefined) {
+        roomData = {
+          ...newRoomData,
+          playerList: [{ id: socket.id, index: 0 }],
+        };
+      } else {
+        roomData = {
+          ...currentRoomData,
+          playerList: [
+            ...currentRoomData.playerList,
+            {
+              id: socket.id,
+              index: 1,
+            },
+          ],
+        };
+      }
+      serverState.set(roomId, roomData);
+      console.log(roomData.playerList);
     });
+    // socket.on("leave-room", (roomId) => {
+    //   const currentRoomData = serverState.get(roomId);
+    //   if (currentRoomData) {
+    //     console.log(currentRoomData.playerList);
+    //     serverState.set(roomId, {
+    //       ...currentRoomData,
+    //       playerList: currentRoomData.playerList.filter(
+    //         ({ id }) => id !== socket.id
+    //       ),
+    //     });
+    //   }
+    // });
   });
 
   console.log("Setting up socket");

@@ -1,21 +1,30 @@
 "use client";
 
 import Board from "@/app/components/board";
+import { useGetSocket } from "@/app/hooks/useGetSocket";
 import { usePathname } from "next/navigation";
+import { useEffect, useLayoutEffect } from "react";
 
 let socket;
 
 export default function Home() {
   const pathname = usePathname();
   const roomId = pathname?.split("/")[2];
+  console.log("home");
+  const { socket } = useGetSocket();
 
   // useEffect(() => {
-  //   const sayHello = async () => {
-  //     console.log("saying hello");
-  //     socket = await socketClient();
-  //     socket.emit("hello");
+  //   if (socket) {
+  //     socket.emit("join-room", roomId);
+  //   }
+  // }, [socket]);
+
+  // useLayoutEffect(() => {
+  //   return () => {
+  //     if (socket) {
+  //       socket.emit("leave-room", roomId);
+  //     }
   //   };
-  //   sayHello();
   // }, []);
 
   return (
